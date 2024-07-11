@@ -4,7 +4,7 @@ import TodoFooter from "./Components/Footer/TodoFooter.jsx";
 import { createContext, useCallback, useMemo, useReducer } from "react";
 import "./App.css";
 
-const initialState = [
+const initialState = JSON.parse(localStorage.getItem("todos")) || [
     {
         id: Math.random(),
         text: "Learn JS",
@@ -22,10 +22,14 @@ const initialState = [
     },
 ];
 
+function saveToStorage(todos) {
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
 function reducer(state, action) {
     switch (action.type) {
         case "add":
-            return [
+            const updatedTodos = [
                 ...state,
                 {
                     id: Math.random(),
@@ -33,19 +37,27 @@ function reducer(state, action) {
                     isCompleted: false,
                 },
             ];
+            saveToStorage(updatedTodos);
+            return updatedTodos;
 
         case "delete":
-            return state.filter((todo) => todo.id !== action.payload.deletedTodo.id);
+            const filteredTodos = state.filter((todo) => todo.id !== action.payload.deletedTodo.id);
+            saveToStorage(filteredTodos);
+            return filteredTodos;
 
         case "update":
-            return state.map((todo) =>
+            const updatedState = state.map((todo) =>
                 todo.id === action.payload.updatedTodo.id
                     ? action.payload.updatedTodo
                     : todo,
             );
+            saveToStorage(updatedState);
+            return updatedState;
 
         case "clearCompleted":
-            return state.filter((todo) => !todo.isCompleted);
+            const remainingTodos = state.filter((todo) => !todo.isCompleted);
+            saveToStorage(remainingTodos);
+            return remainingTodos;
     }
 }
 

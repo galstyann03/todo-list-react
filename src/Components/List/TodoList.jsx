@@ -5,7 +5,7 @@ import { memo, useEffect } from "react";
 const TodoList = memo(
   ({ todos }) => {
     useEffect(() => {
-      document.title = `Todo ${todos.length}`;
+      document.title = `Todos ${todos.filter((todo) => todo.isCompleted).length}/${todos.length}`;
     }, [todos]);
 
     return (
